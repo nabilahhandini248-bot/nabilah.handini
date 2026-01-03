@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Hub - Cyber Vibrant Edition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root { 
+            --primary: #ff2d78; 
+            --primary-light: #ffe4ee;
+            --secondary: #22c55e; 
+            --secondary-light: #dcfee7;
+            --bg-body: #fff0f6;
+            --card-white: #ffffff;
+            --text-dark: #2d0015;
+            --text-soft: #8a5a71;
+            --danger: #ff0000;
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        * { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        body { 
+            margin:0; 
+            font-family:"Plus Jakarta Sans", sans-serif; 
+            background-color: var(--bg-body); 
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(255, 45, 120, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(34, 197, 94, 0.1) 0px, transparent 50%);
+            min-height: 100vh;
+            color: var(--text-dark); 
+            overflow-x: hidden;
+        }
+
+        .nav-tabs {
+            display: flex; justify-content: center; gap: 15px; padding: 20px;
+            background: var(--glass); backdrop-filter: blur(20px);
+            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .tab-btn {
+            padding: 12px 25px; border-radius: 15px; border: 2px solid transparent;
+            background: white; color: var(--text-soft); cursor: pointer; font-weight: 700;
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        .tab-btn.active {
+            background: var(--primary); color: white;
+            box-shadow: 0 8px 20px rgba(255, 45, 120, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .page { display: none; padding: 30px; animation: slideUp 0.6s ease; }
+        .page.active { display: block; }
+
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .illustration-card {
+            background: white; border-radius: 30px; padding: 30px;
+            display: flex; align-items: center; gap: 30px; margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(255, 45, 120, 0.1);
+            border: 1px solid var(--primary-light);
+            position: relative; overflow: hidden;
+        }
+
+        .illustration-card img {
+            width: 150px; height: auto; animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .bubble-text {
+            background: var(--primary-light); padding: 20px; border-radius: 20px;
+            border-bottom-left-radius: 0; color: var(--primary);
+            font-weight: 700; position: relative; border: 1px solid rgba(255, 45, 120, 0.2);
+        }
+
+        .container-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px; max-width: 1300px; margin: auto; }
+        .card { 
+            background: white; border-radius: 25px; padding: 25px; 
+            border: 1px solid rgba(255, 45, 120, 0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+
+        .form-group { margin-bottom: 20px; }
+        label { font-size: 11px; font-weight: 800; color: var(--text-soft); text-transform: uppercase; margin-bottom: 8px; display: block; }
+        input, select { 
+            width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #ffeef4; 
+            background: #fffafa; color: var(--text-dark); font-family: inherit; font-weight: 600;
+        }
+        input:focus { border-color: var(--primary); outline: none; background: white; }
+
+        button { 
+            width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(255, 45, 120, 0.3); }
+        .btn-secondary { background: var(--secondary); color: white; box-shadow: 0 5px 15px rgba(34, 197, 94, 0.3); }
+
+        .calendar-preview { grid-column: span 3; display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; margin-top: 30px; }
+        .day-col { background: white; border-radius: 20px; padding: 15px; min-height: 200px; border: 2px solid #ffeef4; }
+        .day-name { text-align: center; font-weight: 800; color: var(--primary); margin-bottom: 15px; }
+
+        .event-tag { 
+            background: var(--bg-body); padding: 12px; border-radius: 12px; margin-bottom: 10px; font-size: 11px;
+            border-left: 5px solid var(--primary); font-weight: 600;
+        }
+
+        .stat-box {
+            background: white; padding: 20px; border-radius: 20px; text-align: center;
+            border: 1px solid var(--primary-light);
+        }
+        .balance-hero {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #ff2d78, #ff7eb3);
+            color: white; padding: 40px; border-radius: 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 15px 35px rgba(255, 45, 120, 0.2);
+        }
+
+        @media (max-width: 900px) {
+            .container-grid { grid-template-columns: 1fr; }
+            .calendar-preview { grid-template-columns: repeat(2, 1fr); }
+            .balance-hero { grid-column: auto; flex-direction: column; text-align: center; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="nav-tabs">
+    <div class="tab-btn active" onclick="openPage('planner', this)"><i class="fas fa-calendar-alt"></i> Strategic Planner</div>
+    <div class="tab-btn" onclick="openPage('finance', this)"><i class="fas fa-money-bill-wave"></i> Finance AI</div>
+</nav>
+
+<div id="planner" class="page active">
+    <div class="illustration-card">
+        <img src="https://cdni.iconscout.com/illustration/premium/thumb/male-manager-working-on-marketing-planning-illustration-download-in-svg-png-gif-file-formats--business-plan-strategy-development-pack-illustrations-5384160.png">
+        <div>
+            <h2 style="margin-top:0; color: var(--primary)">Toxic Productivity Hub</h2>
+            <div class="bubble-text" id="aiAdvice">Cepat input jadwalmu, sebelum masa depanmu makin suram.</div>
+        </div>
+    </div>
+
+    <div class="container-grid">
+        <div class="card">
+            <h3><i class="fas fa-university" style="color:var(--primary)"></i> Input Kuliah</h3>
+            <div class="form-group"><label>Mata Kuliah</label><input type="text" id="mkNama" placeholder="Nama MK"></div>
+            <div class="form-group"><label>Hari</label><select id="mkHari"></select></div>
+            <div class="form-group">
+                <label>Waktu</label>
+                <div style="display:flex; gap:5px;"><select id="mkSH"></select>:<select id="mkSM"></select> - <select id="mkEH"></select>:<select id="mkEM"></select></div>
+            </div>
+            <button class="btn-primary" onclick="savePlannerItem('kuliah')">Simpan Jadwal</button>
+        </div>
+
+        <div class="card" style="display:flex; flex-direction:column; align-items:center;">
+            <h3>Beban Hidup</h3>
+            <div style="width: 100%; max-width: 200px;"><canvas id="myPieChart"></canvas></div>
+            <div id="chartLegend" style="margin-top:20px; font-weight:700; color:var(--primary)"></div>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-tasks" style="color:var(--secondary)"></i> Agenda Lain</h3>
+            <div class="form-group"><label>Nama Agenda</label><input type="text" id="kNama" placeholder="Nongkrong / Rapat"></div>
+            <div class="form-group"><label>Tipe</label><select id="kTipe" onchange="togglePlannerDate()"><option value="harian">Sekali Saja</option><option value="rutin">Rutin Mingguan</option></select></div>
+            <div id="dateInputSection" class="form-group"><label>Waktu</label>
+                <div style="display:flex; gap:5px;"><select id="kTgl"></select><select id="kBln"></select></div>
+            </div>
+            <div id="dayInputSection" class="form-group" style="display:none;"><label>Hari</label><select id="kHariSelect"></select></div>
+            <div class="form-group">
+                <label>Jam</label>
+                <div style="display:flex; gap:5px;"><select id="kSH"></select>:<select id="kSM"></select> - <select id="kEH"></select>:<select id="kEM"></select></div>
+            </div>
+            <button class="btn-secondary" onclick="savePlannerItem('kegiatan')">Tambah Agenda</button>
+        </div>
+
+        <div class="calendar-preview" id="calendar"></div>
+    </div>
+</div>
+
+<div id="finance" class="page">
+    <div class="illustration-card">
+        <img src="https://cdni.iconscout.com/illustration/premium/thumb/woman-checking-financial-growth-illustration-download-in-svg-png-gif-file-formats--business-report-analysis-data-pack-illustrations-5384157.png">
+        <div>
+            <h2 style="margin-top:0; color: var(--primary)">Judge My Wallet AI</h2>
+            <div class="bubble-text" id="aiAnalysis">Silakan masukkan data keuanganmu, biar saya tertawakan.</div>
+        </div>
+    </div>
+
+    <div class="container-grid">
+        <div class="balance-hero">
+            <div>
+                <span style="opacity:0.9; font-weight:600">Sisa Saldo (Menuju Kemiskinan)</span>
+                <h1 id="balanceDisplay" style="font-size:3rem; margin:10px 0">Rp 0</h1>
+            </div>
+            <div style="display:flex; gap:20px">
+                <div class="stat-box" style="color:var(--text-dark)">
+                    <small>Duit Masuk</small>
+                    <div id="totalIncomeDisplay" style="color:var(--secondary); font-weight:800">Rp 0</div>
+                </div>
+                <div class="stat-box" style="color:var(--text-dark)">
+                    <small>Duit Melayang</small>
+                    <div id="totalExpenseDisplay" style="color:var(--primary); font-weight:800">Rp 0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><i class="fas fa-plus-circle"></i> Catat Dosa</h3>
+            <div class="form-group"><label>Keterangan</label><input type="text" id="finDesc" placeholder="Beli apa lagi?"></div>
+            <div class="form-group"><label>Nominal</label><input type="number" id="finAmount" placeholder="0"></div>
+            <div class="form-group"><label>Kategori</label><select id="finType"><option value="income">Uang Masuk</option><option value="expense">Uang Keluar</option></select></div>
+            <button class="btn-primary" onclick="addFinanceTransaction()">Simpan Transaksi</button>
+        </div>
+
+        <div class="card" style="grid-column: span 3;">
+            <h3>Riwayat Kebobrokan Ekonomi</h3>
+            <div style="overflow-x: auto;">
+                <table style="width:100%; border-collapse: collapse; margin-top:15px;">
+                    <thead style="background:var(--primary-light); border-radius:10px">
+                        <tr>
+                            <th style="padding:15px; text-align:left; color:var(--primary)">WAKTU</th>
+                            <th style="padding:15px; text-align:left; color:var(--primary)">DESKRIPSI</th>
+                            <th style="padding:15px; text-align:left; color:var(--primary)">STATUS</th>
+                            <th style="padding:15px; text-align:left; color:var(--primary)">NOMINAL</th>
+                            <th style="padding:15px; text-align:left; color:var(--primary)">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="finTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+    const months = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+    let scheduleData = JSON.parse(localStorage.getItem('smartPlannerData')) || [];
+    let transactions = JSON.parse(localStorage.getItem('finance_light_v1')) || [];
+    let plannerChart;
+
+    function openPage(pageId, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function initPlanner() {
+        const hCols = ['mkSH','mkEH','kSH','kEH'], mCols = ['mkSM','mkEM','kSM','kEM'];
+        hCols.forEach(id => { for(let i=0; i<24; i++) document.getElementById(id).innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`; });
+        mCols.forEach(id => { for(let i=0; i<60; i+=5) document.getElementById(id).innerHTML += `<option value="${i}">${i.toString().padStart(2,'0')}</option>`; });
+        days.forEach(d => { 
+            document.getElementById('mkHari').innerHTML += `<option>${d}</option>`; 
+            document.getElementById('kHariSelect').innerHTML += `<option>${d}</option>`; 
+        });
+        for(let i=1; i<=31; i++) document.getElementById('kTgl').innerHTML += `<option value="${i}">${i}</option>`;
+        months.forEach((m, i) => document.getElementById('kBln').innerHTML += `<option value="${i}">${m.substring(0,3)}</option>`);
+        
+        const ctx = document.getElementById('myPieChart').getContext('2d');
+        plannerChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Kuliah', 'Agenda'], datasets: [{ data: [0, 0], backgroundColor: ['#ff2d78', '#22c55e'], borderWidth: 5, borderColor: '#fff' }] }, options: { plugins: { legend: { display: false } }, cutout: '75%' } });
+        renderPlanner();
+    }
+
+    function togglePlannerDate() {
+        const tipe = document.getElementById('kTipe').value;
+        document.getElementById('dateInputSection').style.display = tipe === 'harian' ? 'block' : 'none';
+        document.getElementById('dayInputSection').style.display = tipe === 'rutin' ? 'block' : 'none';
+    }
+
+    function savePlannerItem(type) {
+        let item = { type, id: Date.now() };
+        if(type === 'kuliah') {
+            item.nama = document.getElementById('mkNama').value;
+            item.hari = document.getElementById('mkHari').value;
+            item.start = document.getElementById('mkSH').value; item.startM = document.getElementById('mkSM').value;
+            item.end = document.getElementById('mkEH').value; item.endM = document.getElementById('mkEM').value;
+        } else {
+            item.nama = document.getElementById('kNama').value;
+            const tipe = document.getElementById('kTipe').value;
+            item.start = document.getElementById('kSH').value; item.startM = document.getElementById('kSM').value;
+            item.end = document.getElementById('kEH').value; item.endM = document.getElementById('kEM').value;
+            if(tipe === 'harian') {
+                const t = document.getElementById('kTgl').value, b = document.getElementById('kBln').value;
+                item.displayDate = t + " " + months[b].substring(0,3);
+                const d = new Date(2025, b, t); item.hari = days[d.getDay() === 0 ? 6 : d.getDay()-1];
+            } else { item.hari = document.getElementById('kHariSelect').value; item.displayDate = "Rutin Mingguan"; }
+        }
+        if(!item.nama) return alert("Isi namanya! Malasnya sudah mendarah daging ya?");
+        scheduleData.push(item);
+        localStorage.setItem('smartPlannerData', JSON.stringify(scheduleData));
+        renderPlanner();
+    }
+
+    function renderPlanner() {
+        const cal = document.getElementById('calendar');
+        cal.innerHTML = "";
+        days.forEach(d => cal.innerHTML += `<div class="day-col" id="col-${d}"><div class="day-name">${d}</div></div>`);
+
+        scheduleData.forEach((item, idx) => {
+            const col = document.getElementById(`col-${item.hari}`);
+            if(col) {
+                const sH = (item.start || "0").toString().padStart(2, '0');
+                const sM = (item.startM || "0").toString().padStart(2, '0');
+                const eH = (item.end || "0").toString().padStart(2, '0');
+                const eM = (item.endM || "0").toString().padStart(2, '0');
+                
+                col.innerHTML += `<div class="event-tag" style="border-color:${item.type==='kuliah'?'#ff2d78':'#22c55e'}">
+                    <strong>${sH}:${sM} - ${eH}:${eM}</strong><br>${item.nama}
+                    <div style="font-size:8px; opacity:0.6; margin-top:5px; display:flex; justify-content:space-between">
+                        ${item.displayDate || ''} <i class="fas fa-trash" style="cursor:pointer" onclick="deletePlanner(${idx})"></i>
+                    </div>
+                </div>`;
+            }
+        });
+
+        const k = scheduleData.filter(i => i.type === 'kuliah').length;
+        const g = scheduleData.filter(i => i.type === 'kegiatan').length;
+        plannerChart.data.datasets[0].data = [k, g];
+        plannerChart.update();
+        document.getElementById('chartLegend').innerHTML = `Kuliah: ${k} | Agenda: ${g}`;
+
+        let adv = "Jadwal kosong? Selamat menikmati gelar sarjana pengangguran nanti.";
+        if(k+g > 0) {
+            if(g > k) adv = "Banyak agenda nongkrong daripada kuliah. Mau jadi duta gibah atau gimana?";
+            else if(k > 5) adv = "Sok sibuk kuliah, IPK belum tentu naik, kesehatan pasti turun. Smart!";
+            else adv = "Jadwal segini aja sudah mau pingsan? Lemah.";
+        }
+        document.getElementById('aiAdvice').innerText = adv;
+    }
+
+    function deletePlanner(idx) {
+        if(confirm("Hapus jadwal? Nyerah ya karena capek sok produktif?")) { 
+            scheduleData.splice(idx, 1); 
+            localStorage.setItem('smartPlannerData', JSON.stringify(scheduleData)); 
+            renderPlanner(); 
+        }
+    }
+
+    function addFinanceTransaction() {
+        const desc = document.getElementById('finDesc').value;
+        const amount = parseFloat(document.getElementById('finAmount').value);
+        const type = document.getElementById('finType').value;
+        if(!desc || !amount) return alert("Isi nominalnya! Pantas saja saldo kamu begini.");
+        const now = new Date();
+        const ts = now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+        transactions.unshift({ id: Date.now(), time: ts, desc, amount, type });
+        updateFinanceUI();
+        document.getElementById('finDesc').value=''; document.getElementById('finAmount').value='';
+    }
+
+    function updateFinanceUI() {
+        localStorage.setItem('finance_light_v1', JSON.stringify(transactions));
+        const tbody = document.getElementById('finTableBody');
+        tbody.innerHTML = '';
+        let inc = 0, exp = 0;
+
+        transactions.forEach(t => {
+            const isInc = t.type === 'income';
+            if(isInc) inc += t.amount; else exp += t.amount;
+            tbody.innerHTML += `<tr style="border-bottom: 1px solid #ffeef4">
+                <td style="padding:15px; font-size:12px; color:var(--text-soft)">${t.time}</td>
+                <td style="padding:15px; font-weight:700">${t.desc}</td>
+                <td style="padding:15px"><span style="background:${isInc?'#dcfee7':'#ffe4ee'}; color:${isInc?'#166534':'#991b1b'}; padding:5px 12px; border-radius:10px; font-size:10px; font-weight:800">${isInc?'MASUK':'DOSA'}</span></td>
+                <td style="padding:15px; font-weight:800; color:${isInc?'var(--secondary)':'var(--primary)'}">Rp ${t.amount.toLocaleString()}</td>
+                <td style="padding:15px"><i class="fas fa-trash-alt" style="cursor:pointer; color:var(--text-soft)" onclick="deleteFin(${t.id})"></i></td>
+            </tr>`;
+        });
+
+        document.getElementById('balanceDisplay').innerText = `Rp ${(inc-exp).toLocaleString()}`;
+        document.getElementById('totalIncomeDisplay').innerText = `Rp ${inc.toLocaleString()}`;
+        document.getElementById('totalExpenseDisplay').innerText = `Rp ${exp.toLocaleString()}`;
+
+        const ratio = (exp / inc) * 100;
+        let sug = "Coba masukkan angka, saya ingin lihat seberapa tragis keuanganmu.";
+        if(inc > 0) {
+            if(ratio > 90) sug = "GILAAAA! Pengeluaran 90%? Kamu mau makan angin minggu depan?";
+            else if(ratio > 70) sug = "Gaya elit, ekonomi sulit. Tabunganmu setipis kesabaran saya!";
+            else sug = "Oke, masih selamat. Tapi jangan bangga dulu, kamu belum kaya.";
+        } else if(exp > 0) sug = "Tidak ada pemasukan tapi belanja terus. Pesugihan atau piara tuyul?";
+        document.getElementById('aiAnalysis').innerText = sug;
+    }
+
+    function deleteFin(id) {
+        if(confirm("Hapus transaksi ini? Mau menghilangkan jejak kebodohan belanjamu?")) {
+            transactions = transactions.filter(t => t.id !== id);
+            updateFinanceUI();
+        }
+    }
+
+    window.onload = () => { initPlanner(); updateFinanceUI(); };
+</script>
+
+</body>
+</html>
